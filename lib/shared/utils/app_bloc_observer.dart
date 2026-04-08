@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_test/core/utils/logger.dart';
+import 'package:news_test/shared/utils/logger.dart';
 
 /// Logs bloc state changes and errors.
 final class AppBlocObserver extends BlocObserver {

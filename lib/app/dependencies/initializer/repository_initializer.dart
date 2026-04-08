@@ -1,6 +1,7 @@
 import 'package:news_test/app/dependencies/model/local_data_source_dependencies.dart';
 import 'package:news_test/app/dependencies/model/remote_data_source_dependencies.dart';
 import 'package:news_test/app/dependencies/model/repository_dependencies.dart';
+import 'package:news_test/features/news/data/repository/news_repository_impl.dart';
 
 /// Defines [RepositoryDependencies] initialization.
 abstract interface class RepositoryInitializer {
@@ -17,6 +18,10 @@ final class RepositoryInitializerImpl implements RepositoryInitializer {
     required final LocalDataSourceDependencies permanentDataSources,
     required final RemoteDataSourceDependencies remoteDataSources,
   }) {
-    return const RepositoryDependenciesImpl();
+    return RepositoryDependenciesImpl(
+      newsRepository: () => NewsRepositoryImpl(
+        remoteDataSource: remoteDataSources.newsRemoteDataSource(),
+      ),
+    );
   }
 }

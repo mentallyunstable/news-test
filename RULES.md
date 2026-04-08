@@ -22,7 +22,7 @@ This file defines the working conventions for `news_test`.
 - Use `rg` and `rg --files` for search.
 - Use non-interactive shell commands.
 - Use `apply_patch` for manual code edits.
-- All Dart and Flutter commands must use the `fvm` prefix in this project.
+- All `dart` and `flutter` commands must use the `fvm` prefix in this project.
 - Prefer running commands from the project root unless a narrower directory is
   clearly better.
 

@@ -1,0 +1,5 @@
+{
+  "ENV": "dev",
+  "BASE_URL": "https://newsapi.org/",
+  "API_KEY": "c54c3d54adc24875ad76310a2de2d5b7"
+}

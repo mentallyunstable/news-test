@@ -1,28 +1,26 @@
 # news_test
 
-Flutter project for the news test task.
+Flutter app for the news test task.
 
-## What's Included
-
-- App startup flow under `lib/app`
-- Dependency container with basic services:
-  - `SharedPreferences`
-  - `FlutterSecureStorage`
-  - `Dio`
-- `go_router` setup with shell branching
-- `fvm` pinned Flutter SDK via `.fvmrc`
-
-## Project Structure
-
-- `lib/app` — app runner, initialization, root widgets, dependencies
-- `lib/core` — shared utilities
-- `lib/shared` — router and theme
-- `lib/features` — feature screens
-
-## Commands
+## Run
 
 ```bash
 fvm flutter pub get
 fvm flutter analyze
-fvm flutter run
+fvm flutter run --dart-define-from-file=config.json
+```
+
+## Config
+
+The app reads `ENV`, `API_BASE`, and `API_KEY` from Dart defines. You can keep
+them in `config.json` and pass the file with `--dart-define-from-file`.
+
+Example `config.json`:
+Provide these Dart defines:
+```json
+{
+  "ENV": "dev",
+  "BASE_URL": "https://newsapi.org/",
+  "API_KEY": "your_api_key"
+}
 ```

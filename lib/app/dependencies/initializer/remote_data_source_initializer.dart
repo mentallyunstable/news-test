@@ -1,5 +1,6 @@
 import 'package:news_test/app/dependencies/model/remote_data_source_dependencies.dart';
 import 'package:news_test/app/dependencies/model/service_dependencies.dart';
+import 'package:news_test/features/news/domain/data_source/news_remote_data_source.dart';
 
 /// Defines [RemoteDataSourceDependencies] initialization.
 abstract interface class RemoteDataSourceInitializer {
@@ -12,6 +13,8 @@ final class RemoteDataSourceInitializerImpl implements RemoteDataSourceInitializ
   RemoteDataSourceDependencies initialize({
     required final ServiceDependencies services,
   }) {
-    return const RemoteDataSourceDependenciesImpl();
+    return RemoteDataSourceDependenciesImpl(
+      newsRemoteDataSource: () => NewsRemoteDataSource(services.dio()),
+    );
   }
 }
