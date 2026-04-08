@@ -1,0 +1,28 @@
+name: news_test
+description: "Starter project for the Flutter news test task."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_bloc: ^9.1.1
+  go_router: ^15.1.2
+  flutter_secure_storage: ^9.2.4
+  shared_preferences: ^2.5.3
+  dio: ^5.7.0
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
