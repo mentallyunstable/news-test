@@ -12,7 +12,7 @@ fvm flutter run --dart-define-from-file=config.json
 
 ## Config
 
-The app reads `ENV`, `API_BASE`, and `API_KEY` from Dart defines. You can keep
+The app reads `ENV`, `BASE_URL`, and `API_KEY` from Dart defines. You can keep
 them in `config.json` and pass the file with `--dart-define-from-file`.
 
 Example `config.json`:
