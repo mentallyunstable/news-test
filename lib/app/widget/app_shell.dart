@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -26,15 +28,21 @@ final class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navBarHeight =
-        Theme.of(context).extension<AppThemeExtensions>()?.navBarHeight ?? 84;
+    final navBarHeight = Theme.of(context).extension<AppThemeExtensions>()?.navBarHeight ?? 84;
+    final mediaQuery = MediaQuery.of(context);
+    final bottomInset = math.max(
+      mediaQuery.viewPadding.bottom,
+      mediaQuery.systemGestureInsets.bottom,
+    );
 
     return Scaffold(
       body: shell,
       extendBody: true,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 19).copyWith(
-          bottom: MediaQuery.viewPaddingOf(context).bottom,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        maintainBottomViewPadding: true,
+        minimum: const EdgeInsets.symmetric(horizontal: 19).copyWith(
+          bottom: math.max(bottomInset, 16),
         ),
         // Because of design preferences we must implement custom navigation bar
         child: DecoratedBox(

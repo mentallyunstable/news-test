@@ -16,6 +16,7 @@ final class ServiceInitializerImpl implements ServiceInitializer {
   @override
   Future<ServiceDependencies> initialize(final AppConfig config) async {
     const timeoutDuration = Duration(seconds: 15);
+    _validateEnvironment(config);
 
     Dio dio() {
       final dio = Dio(
@@ -47,5 +48,22 @@ final class ServiceInitializerImpl implements ServiceInitializer {
         ],
       ),
     );
+  }
+
+  void _validateEnvironment(final AppConfig config) {
+    final apiBase = config.environmentStore.apiBase.trim();
+    final apiKey = config.environmentStore.apiKey.trim();
+
+    if (apiBase.isEmpty) {
+      throw StateError(
+        'Missing BASE_URL dart define. Build or run the app with --dart-define-from-file=config.json.',
+      );
+    }
+
+    if (apiKey.isEmpty) {
+      throw StateError(
+        'Missing API_KEY dart define. Build or run the app with --dart-define-from-file=config.json.',
+      );
+    }
   }
 }

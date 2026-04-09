@@ -39,10 +39,24 @@ mixin BlocTryCatcherMixin<E, S> on Bloc<E, S> {
         return;
       }
 
+      if (exception.type == DioExceptionType.connectionError) {
+        return emitError(emit, ErrorMessages.networkError);
+      }
+
+      if (exception.type == DioExceptionType.connectionTimeout ||
+          exception.type == DioExceptionType.receiveTimeout ||
+          exception.type == DioExceptionType.sendTimeout) {
+        return emitError(emit, ErrorMessages.timeoutError);
+      }
+
       final data = exception.response?.data;
 
       if (data == null) {
         return emitError(emit, ErrorMessages.unknownError);
+      }
+
+      if (data is! Map<String, dynamic>) {
+        return emitError(emit, exception.response?.statusMessage ?? ErrorMessages.unknownError);
       }
 
       final error = CommonErrorModel.fromJson(data);

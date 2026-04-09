@@ -13,6 +13,7 @@ Flutter app for the news test task.
 ```bash
 fvm flutter pub get
 fvm flutter run --dart-define-from-file=config.json
+make apk_release
 ```
 
 ## Config
@@ -42,4 +43,5 @@ Example `config.json`:
 ```bash
 make builder
 make analyze
+make apk_release
 ```

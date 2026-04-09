@@ -1,9 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:news_test/shared/utils/logger.dart';
+
+typedef ArticleImageBuilder =
+    Widget Function(
+      BuildContext context,
+      ImageProvider imageProvider,
+    );
 
 final class ArticleImage extends StatelessWidget {
   final String? imageUrl;
-  final ImageWidgetBuilder? imageBuilder;
+  final ArticleImageBuilder? imageBuilder;
 
   const ArticleImage({
     super.key,
@@ -19,12 +25,27 @@ final class ArticleImage extends StatelessWidget {
       return const _ArticleImageFallback(icon: Icons.image_not_supported_outlined);
     }
 
-    return CachedNetworkImage(
-      imageUrl: url,
+    final imageProvider = NetworkImage(url);
+
+    return Image(
+      image: imageProvider,
       fit: BoxFit.cover,
-      imageBuilder: imageBuilder,
-      placeholder: (_, _) => const _ArticleImageLoading(),
-      errorWidget: (_, _, _) => const _ArticleImageFallback(icon: Icons.broken_image_outlined),
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (!wasSynchronouslyLoaded && frame == null) {
+          return const _ArticleImageLoading();
+        }
+
+        return imageBuilder?.call(context, imageProvider) ?? child;
+      },
+      errorBuilder: (_, error, stackTrace) {
+        logger.error(
+          'Article image load failed',
+          exception: '$url\n$error',
+          stackTrace: stackTrace,
+        );
+
+        return const _ArticleImageFallback(icon: Icons.broken_image_outlined);
+      },
     );
   }
 }
