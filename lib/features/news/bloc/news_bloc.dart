@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_test/features/news/domain/entity/news_article_item_entity.dart';
 import 'package:news_test/features/news/domain/repository/news_repository.dart';
@@ -10,11 +12,10 @@ part 'news_bloc_state.dart';
 part 'news_bloc_state_data.dart';
 
 final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatcherMixin {
-  final NewsRepository _repository;
+  static const _searchDelay = Duration(milliseconds: 300);
+  static const _minimumSearchQueryLength = 3;
 
-  Future<NewsBlocState> get doneLoading async => await stream.firstWhere(
-    (state) => state is! LoadingNewsBlocState,
-  );
+  final NewsRepository _repository;
 
   NewsBloc({
     required final NewsRepository repository,
@@ -23,8 +24,38 @@ final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatc
     on<NewsBlocEvent>(
       (event, emit) => switch (event) {
         final GetNewsBlocEvent e => _onGetNewsBlocEvent(e, emit),
+        final SelectCategoryNewsEvent e => _onSelectCategoryNewsEvent(e, emit),
+        _ => () {},
       },
     );
+    on<SearchNewsEvent>(
+      _onSearchNewsEvent,
+      transformer: restartable(),
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _cancelActiveRequest();
+
+    return super.close();
+  }
+
+  // Token for cancelling repeatable requests
+  CancelToken? _activeRequestCancelToken;
+
+  Future<NewsBlocState> get doneLoading async => await stream.firstWhere(
+    (state) => state is! LoadingNewsBlocState,
+  );
+
+  Map<String, NewsArticleItemEntity> _mergeArticles(
+    final Map<String, NewsArticleItemEntity> current,
+    final List<NewsArticleItemEntity> incoming,
+  ) {
+    return {
+      ...current,
+      for (final article in incoming) article.id: article,
+    };
   }
 
   FutureOr<void> _onGetNewsBlocEvent(
@@ -32,14 +63,127 @@ final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatc
     final Emitter<NewsBlocState> emit,
   ) async {
     await tryCatch(event, emit, () async {
-      emit(.loading(data: state.data));
+      final data = state.data;
 
-      final response = await _repository.getNews();
+      emit(.loading(data: data));
+
+      await Future.delayed(const Duration(milliseconds: 1000));
+
+      final response = await _repository.getNews(category: data.selectedCategory);
+      final articles = response.articles;
 
       emit(
-        .initial(data: state.data.copyWith(news: response.articles)),
+        .initial(
+          data: data.copyWith(
+            articlesById: _mergeArticles(data.articlesById, articles),
+            newsIds: articles.map((article) => article.id).toList(),
+          ),
+        ),
       );
     });
+  }
+
+  FutureOr<void> _onSelectCategoryNewsEvent(
+    final SelectCategoryNewsEvent event,
+    final Emitter<NewsBlocState> emit,
+  ) async {
+    await tryCatch(event, emit, () async {
+      if (event.category == state.data.selectedCategory) {
+        return;
+      }
+
+      emit(
+        .initial(
+          data: state.data.copyWith(
+            selectedCategory: event.category,
+            articlesById: const {},
+            newsIds: const [],
+            searchResultIds: const [],
+          ),
+        ),
+      );
+
+      add(const .get());
+    });
+  }
+
+  FutureOr<void> _onSearchNewsEvent(
+    final SearchNewsEvent event,
+    final Emitter<NewsBlocState> emit,
+  ) async {
+    final query = event.query.trim();
+    final canSearch = query.length >= _minimumSearchQueryLength;
+
+    if (query == state.data.searchQuery) {
+      return;
+    }
+
+    _cancelActiveRequest();
+
+    if (!canSearch) {
+      if (state.data.searchQuery.isNotEmpty) {
+        return emit(
+          .initial(
+            data: state.data.copyWith(
+              searchQuery: query,
+              searchResultIds: const [],
+            ),
+          ),
+        );
+      }
+
+      return;
+    }
+
+    await Future.delayed(_searchDelay);
+
+    if (emit.isDone) {
+      return;
+    }
+
+    emit(
+      .loading(
+        data: state.data.copyWith(searchQuery: query),
+      ),
+    );
+
+    final data = state.data;
+    final response = await _repository.getNews(
+      category: data.selectedCategory,
+      query: data.searchQuery,
+      cancelToken: _activeRequestCancelToken = _createCancelToken(),
+    );
+    final articles = response.articles;
+
+    _activeRequestCancelToken = null;
+
+    emit(
+      .initial(
+        data: data.copyWith(
+          articlesById: _mergeArticles(data.articlesById, articles),
+          searchResultIds: articles.map((article) => article.id).toList(),
+        ),
+      ),
+    );
+  }
+
+  CancelToken _createCancelToken() {
+    _cancelActiveRequest();
+
+    final cancelToken = CancelToken();
+    _activeRequestCancelToken = cancelToken;
+
+    return cancelToken;
+  }
+
+  void _cancelActiveRequest() {
+    final cancelToken = _activeRequestCancelToken;
+
+    if (cancelToken != null && !cancelToken.isCancelled) {
+      cancelToken.cancel();
+    }
+
+    _activeRequestCancelToken = null;
   }
 
   @override

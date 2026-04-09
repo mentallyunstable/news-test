@@ -28,6 +28,8 @@ final class AppTheme {
     scaffoldBackgroundColor: AppColors.scaffoldBackground,
     appBarTheme: const AppBarTheme(
       centerTitle: false,
+      actionsPadding: .symmetric(horizontal: 8),
+      backgroundColor: AppColors.surface,
       surfaceTintColor: Colors.transparent,
     ),
   );

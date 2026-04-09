@@ -17,6 +17,8 @@ sealed class NewsBlocState {
     required final BaseNewsBlocStateData data,
     required final String message,
   }) = ErrorNewsBlocState;
+
+  bool get isSearching => data.searchQuery.isNotEmpty;
 }
 
 final class InitialNewsBlocState extends NewsBlocState {

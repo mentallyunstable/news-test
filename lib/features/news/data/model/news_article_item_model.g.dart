@@ -12,9 +12,9 @@ NewsArticleItemModel _$NewsArticleItemModelFromJson(
   source: NewsSourceModel.fromJson(json['source'] as Map<String, dynamic>),
   author: json['author'] as String?,
   title: json['title'] as String,
-  description: json['description'] as String,
+  description: json['description'] as String?,
   url: json['url'] as String,
-  urlToImage: json['urlToImage'] as String,
+  urlToImage: json['urlToImage'] as String?,
   content: json['content'] as String?,
   publishedAt: DateTime.parse(json['publishedAt'] as String),
 );

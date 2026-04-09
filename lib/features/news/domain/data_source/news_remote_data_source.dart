@@ -11,6 +11,8 @@ abstract class NewsRemoteDataSource {
 
   @GET(ApiUrl.topHeadlines)
   Future<NewsResponseModel> getNews({
-    @Query('country') String country = 'us',
+    @Query('category') String? category,
+    @Query('q') String? query,
+    @CancelRequest() CancelToken? cancelToken,
   });
 }

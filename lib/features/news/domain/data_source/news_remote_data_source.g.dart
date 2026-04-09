@@ -20,9 +20,17 @@ class _NewsRemoteDataSource implements NewsRemoteDataSource {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<NewsResponseModel> getNews({String country = 'us'}) async {
+  Future<NewsResponseModel> getNews({
+    String? category,
+    String? query,
+    CancelToken? cancelToken,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'country': country};
+    final queryParameters = <String, dynamic>{
+      r'category': category,
+      r'q': query,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<NewsResponseModel>(
@@ -32,6 +40,7 @@ class _NewsRemoteDataSource implements NewsRemoteDataSource {
             '/v2/top-headlines',
             queryParameters: queryParameters,
             data: _data,
+            cancelToken: cancelToken,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );

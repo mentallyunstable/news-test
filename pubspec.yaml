@@ -13,6 +13,7 @@ dependencies:
 
   # State management
   flutter_bloc: ^9.1.1
+  bloc_concurrency: ^0.3.0
 
   # Routing
   go_router: ^15.1.2
@@ -33,6 +34,7 @@ dependencies:
   json_annotation: ^4.11.0
   flutter_svg: ^2.2.4
   intl: ^0.20.2
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:

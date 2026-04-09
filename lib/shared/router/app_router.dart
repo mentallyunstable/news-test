@@ -57,9 +57,9 @@ final class AppRouter {
     name: AppRouterPaths.articleDetails.name,
     path: AppRouterPaths.articleDetails.path,
     builder: (context, state) {
-      final articleIndex = int.tryParse(state.pathParameters['article_index'] ?? '');
+      final articleId = state.pathParameters['article_id'];
 
-      return ArticleDetailsScreen(articleIndex: articleIndex);
+      return ArticleDetailsScreen(articleId: articleId);
     },
   );
 }
