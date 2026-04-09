@@ -27,6 +27,7 @@ final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatc
         final SelectCategoryNewsEvent e => _onSelectCategoryNewsEvent(e, emit),
         _ => () {},
       },
+      transformer: restartable(),
     );
     on<SearchNewsEvent>(
       _onSearchNewsEvent,
@@ -48,16 +49,6 @@ final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatc
     (state) => state is! LoadingNewsBlocState,
   );
 
-  Map<String, NewsArticleItemEntity> _mergeArticles(
-    final Map<String, NewsArticleItemEntity> current,
-    final List<NewsArticleItemEntity> incoming,
-  ) {
-    return {
-      ...current,
-      for (final article in incoming) article.id: article,
-    };
-  }
-
   FutureOr<void> _onGetNewsBlocEvent(
     final GetNewsBlocEvent event,
     final Emitter<NewsBlocState> emit,
@@ -70,6 +61,11 @@ final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatc
       await Future.delayed(const Duration(milliseconds: 1000));
 
       final response = await _repository.getNews(category: data.selectedCategory);
+
+      if (emit.isDone) {
+        return;
+      }
+
       final articles = response.articles;
 
       emit(
@@ -125,6 +121,10 @@ final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatc
         return emit(
           .initial(
             data: state.data.copyWith(
+              articlesById: _retainArticlesByIds(
+                state.data.articlesById,
+                state.data.newsIds,
+              ),
               searchQuery: query,
               searchResultIds: const [],
             ),
@@ -141,9 +141,18 @@ final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatc
       return;
     }
 
+    final retainedArticlesById = _retainArticlesByIds(
+      state.data.articlesById,
+      state.data.newsIds,
+    );
+
     emit(
       .loading(
-        data: state.data.copyWith(searchQuery: query),
+        data: state.data.copyWith(
+          articlesById: retainedArticlesById,
+          searchQuery: query,
+          searchResultIds: const [],
+        ),
       ),
     );
 
@@ -184,6 +193,35 @@ final class NewsBloc extends Bloc<NewsBlocEvent, NewsBlocState> with BlocTryCatc
     }
 
     _activeRequestCancelToken = null;
+  }
+
+  Map<String, NewsArticleItemEntity> _mergeArticles(
+    final Map<String, NewsArticleItemEntity> current,
+    final List<NewsArticleItemEntity> incoming,
+  ) {
+    return {
+      ...current,
+      for (final article in incoming) article.id: article,
+    };
+  }
+
+  Map<String, NewsArticleItemEntity> _retainArticlesByIds(
+    final Map<String, NewsArticleItemEntity> current,
+    final List<String> ids,
+  ) {
+    final retained = <String, NewsArticleItemEntity>{};
+
+    for (final id in ids) {
+      final article = current[id];
+
+      if (article == null) {
+        continue;
+      }
+
+      retained[id] = article;
+    }
+
+    return retained;
   }
 
   @override

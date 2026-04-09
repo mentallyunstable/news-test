@@ -6,10 +6,12 @@ import 'package:news_test/shared/router/app_router.dart';
 
 final class NewsListView extends StatelessWidget {
   final List<NewsArticleItemEntity> news;
+  final bool showFavoriteButton;
 
   const NewsListView({
     super.key,
     required this.news,
+    this.showFavoriteButton = false,
   });
 
   @override
@@ -28,6 +30,7 @@ final class NewsListView extends StatelessWidget {
           return NewsListItem(
             article: article,
             onPressed: () => _pushArticleDetails(context, article.id),
+            showFavoriteButton: showFavoriteButton,
           );
         },
       ),

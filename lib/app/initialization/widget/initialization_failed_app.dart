@@ -14,8 +14,7 @@ class InitializationFailedApp extends StatefulWidget {
   final Future<void> Function()? retryInitialization;
 
   @override
-  State<InitializationFailedApp> createState() =>
-      _InitializationFailedAppState();
+  State<InitializationFailedApp> createState() => _InitializationFailedAppState();
 }
 
 class _InitializationFailedAppState extends State<InitializationFailedApp> {
@@ -34,6 +33,11 @@ class _InitializationFailedAppState extends State<InitializationFailedApp> {
 
     _inProgress.value = true;
     await widget.retryInitialization!();
+
+    if (!mounted) {
+      return;
+    }
+
     _inProgress.value = false;
   }
 

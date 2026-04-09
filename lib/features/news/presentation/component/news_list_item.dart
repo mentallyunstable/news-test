@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:news_test/features/news/domain/entity/news_article_item_entity.dart';
 import 'package:news_test/features/news/presentation/component/article_image.dart';
+import 'package:news_test/features/news/presentation/component/favorite_icon_button.dart';
 
 final class NewsListItem extends StatelessWidget {
   final NewsArticleItemEntity article;
   final VoidCallback onPressed;
+  final bool showFavoriteButton;
 
-  const NewsListItem({super.key, required this.article, required this.onPressed});
+  const NewsListItem({
+    super.key,
+    required this.article,
+    required this.onPressed,
+    this.showFavoriteButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +57,33 @@ final class NewsListItem extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const .symmetric(vertical: 5, horizontal: 12),
+                    padding: const .symmetric(vertical: 8, horizontal: 12),
                     child: Column(
                       crossAxisAlignment: .start,
                       children: [
-                        Text(
-                          article.titleText,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.bodyLarge,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                article.titleText,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.bodyLarge,
+                              ),
+                            ),
+                            if (showFavoriteButton) ...[
+                              const SizedBox(width: 8),
+                              FavoriteIconButton(
+                                article: article,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints.tightFor(
+                                  width: 28,
+                                  height: 28,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                         const SizedBox(height: 4),
                         Expanded(

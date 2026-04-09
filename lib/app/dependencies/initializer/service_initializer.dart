@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:news_test/app/constant/app_config.dart';
 import 'package:news_test/app/dependencies/model/service_dependencies.dart';
+import 'package:news_test/features/favorites/data/local/favorite_articles_db_migration.dart';
+import 'package:news_test/shared/data/local/db_service.dart';
 import 'package:news_test/shared/utils/api_key_interceptor.dart';
 
 /// Defines [ServiceDependencies] initialization.
@@ -39,6 +41,11 @@ final class ServiceInitializerImpl implements ServiceInitializer {
 
     return ServiceDependenciesImpl(
       dio: dio,
+      dbService: () => SqfliteDbService(
+        migrations: const [
+          FavoriteArticlesDbMigration(),
+        ],
+      ),
     );
   }
 }
