@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_test/features/news/bloc/news_bloc.dart';
 import 'package:news_test/features/news/presentation/component/news_category_list_view.dart';
 import 'package:news_test/features/news/presentation/component/news_list_view.dart';
+import 'package:news_test/features/news/presentation/component/news_search_field.dart';
+import 'package:news_test/shared/ui/dismiss_keyboard.dart';
 
 final class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -12,82 +14,94 @@ final class NewsScreen extends StatefulWidget {
 }
 
 final class _NewsScreenState extends State<NewsScreen> {
-  int _selectedCategoryIndex = 0;
+  late final TextEditingController _searchController = TextEditingController(
+    text: context.read<NewsBloc>().state.data.searchQuery,
+  );
 
-  void _onSelectCategory(final int index, final String category) {
-    setState(() {
-      _selectedCategoryIndex = index;
-    });
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Scaffold(
-      body: RefreshIndicator(
-        displacement: MediaQuery.viewPaddingOf(context).top,
-        onRefresh: () async {
-          final bloc = context.read<NewsBloc>();
-          bloc.add(const NewsBlocEvent.get());
-          await bloc.doneLoading;
-        },
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              floating: true,
-              snap: true,
-              backgroundColor: colorScheme.surface,
-              surfaceTintColor: Colors.transparent,
-              scrolledUnderElevation: 0,
-              title: const Text('News'),
-              bottom: NewsCategoriesListView(
-                selectedCategoryIndex: _selectedCategoryIndex,
-                onSelectCategory: _onSelectCategory,
-              ),
-            ),
-            BlocBuilder<NewsBloc, NewsBlocState>(
-              builder: (context, state) {
-                final news = state.data.news;
-
-                if (state is LoadingNewsBlocState && news.isEmpty) {
-                  return const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: CircularProgressIndicator(),
+    return DismissKeyboard(
+      child: Scaffold(
+        body: RefreshIndicator(
+          displacement: MediaQuery.viewPaddingOf(context).top,
+          onRefresh: () async {
+            final bloc = context.read<NewsBloc>();
+            bloc.add(const NewsBlocEvent.get());
+            await bloc.doneLoading;
+          },
+          child: CustomScrollView(
+            slivers: [
+              BlocBuilder<NewsBloc, NewsBlocState>(
+                builder: (context, state) => SliverAppBar(
+                  snap: true,
+                  floating: true,
+                  scrolledUnderElevation: 0,
+                  titleSpacing: 19,
+                  title: NewsSearchField(
+                    controller: _searchController,
+                    onChanged: (query) => context.read<NewsBloc>().add(
+                      NewsBlocEvent.searchQueryChanged(query: query),
                     ),
-                  );
-                }
+                  ),
+                  bottom: NewsCategoriesListView(
+                    selectedCategory: state.data.selectedCategory,
+                    onSelectCategory: (category) {
+                      context.read<NewsBloc>().add(
+                        NewsBlocEvent.selectCategory(category: category),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              BlocBuilder<NewsBloc, NewsBlocState>(
+                builder: (context, state) {
+                  final news = state.isSearching ? state.data.searchResults : state.data.news;
 
-                if (state is ErrorNewsBlocState) {
-                  return SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Text(
-                          state.message,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          textAlign: TextAlign.center,
+                  if (state is ErrorNewsBlocState) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            state.message,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }
+                    );
+                  }
 
-                if (news.isEmpty) {
-                  return const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: Text('No news available'),
-                    ),
-                  );
-                }
+                  if (state is LoadingNewsBlocState && news.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
 
-                return NewsListView(news: news);
-              },
-            ),
-          ],
+                  if (news.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Text('No news available'),
+                      ),
+                    );
+                  }
+
+                  return NewsListView(news: news);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

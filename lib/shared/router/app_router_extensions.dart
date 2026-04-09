@@ -1,8 +1,8 @@
 part of 'app_router.dart';
 
 extension AppRouterExtensions on GoRouter {
-  void pushArticleDetails(int articleIndex) => pushNamed(
+  void pushArticleDetails(String articleId) => pushNamed(
     AppRouterPaths.articleDetails.name,
-    pathParameters: {'article_index': articleIndex.toString()},
+    pathParameters: {'article_id': articleId},
   );
 }

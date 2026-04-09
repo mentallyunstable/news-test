@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:news_test/features/news/domain/entity/news_article_item_entity.dart';
+import 'package:news_test/features/news/presentation/component/article_image.dart';
 
 final class NewsListItem extends StatelessWidget {
   final NewsArticleItemEntity article;
@@ -39,9 +39,9 @@ final class NewsListItem extends StatelessWidget {
                 SizedBox(
                   width: 112,
                   height: double.infinity,
-                  child: CachedNetworkImage(
+                  child: ArticleImage(
                     imageUrl: article.urlToImage,
-                    imageBuilder: (context, imageProvider) => Ink.image(
+                    imageBuilder: (_, imageProvider) => Ink.image(
                       image: imageProvider,
                       fit: BoxFit.cover,
                       child: const SizedBox.expand(),
@@ -55,19 +55,20 @@ final class NewsListItem extends StatelessWidget {
                       crossAxisAlignment: .start,
                       children: [
                         Text(
-                          article.titleLabel,
+                          article.titleText,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.bodyLarge,
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          article.descriptionLabel,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.bodyMedium,
+                        Expanded(
+                          child: Text(
+                            article.descriptionText,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.bodyMedium,
+                          ),
                         ),
-                        const Spacer(),
                         Align(
                           alignment: .centerEnd,
                           child: Text(
