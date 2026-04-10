@@ -1,0 +1,72 @@
+appId: com.example.newsTest
+name: "Favorites Add And Remove Article iOS"
+---
+- launchApp:
+    clearState: true
+
+- tapOn:
+    id: "shell_favorites_tab_button"
+
+- extendedWaitUntil:
+    visible:
+      id: "favorites_empty_state_text"
+    timeout: 10000
+
+- tapOn:
+    id: "shell_news_tab_button"
+
+- extendedWaitUntil:
+    visible:
+      id: "news_list_item_0"
+    timeout: 20000
+
+- tapOn:
+    id: "news_list_item_0"
+
+- waitForAnimationToEnd
+
+- extendedWaitUntil:
+    visible:
+      id: "article_details_title_text"
+    timeout: 10000
+
+- tapOn:
+    id: "article_details_favorite_button"
+
+- tapOn:
+    id: "shell_favorites_tab_button"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "favorites_empty_state_text"
+    timeout: 10000
+    optional: true
+
+- extendedWaitUntil:
+    visible:
+      id: "news_list_item_0"
+    timeout: 10000
+
+- assertVisible:
+    id: "news_list_item_0_title"
+
+- tapOn:
+    id: "news_list_item_0"
+
+- waitForAnimationToEnd
+
+- extendedWaitUntil:
+    visible:
+      id: "article_details_title_text"
+    timeout: 10000
+
+- tapOn:
+    id: "article_details_favorite_button"
+
+- tapOn:
+    id: "shell_favorites_tab_button"
+
+- extendedWaitUntil:
+    visible:
+      id: "favorites_empty_state_text"
+    timeout: 10000

@@ -5,6 +5,7 @@ import 'package:news_test/features/news/bloc/news_bloc.dart';
 import 'package:news_test/features/news/domain/entity/news_article_item_entity.dart';
 import 'package:news_test/features/news/presentation/component/article_image.dart';
 import 'package:news_test/features/news/presentation/component/favorite_icon_button.dart';
+import 'package:news_test/shared/constant/semantics_identifiers.dart';
 
 final class ArticleDetailsScreen extends StatelessWidget {
   final String? articleId;
@@ -27,7 +28,11 @@ final class ArticleDetailsScreen extends StatelessWidget {
             return Scaffold(
               appBar: AppBar(
                 actions: [
-                  if (article != null) FavoriteIconButton(article: article),
+                  if (article != null)
+                    FavoriteIconButton(
+                      article: article,
+                      semanticsIdentifier: SemanticsIdentifiers.articleDetailsFavoriteButton,
+                    ),
                 ],
               ),
               body: _ArticleDetailsBody(
@@ -71,9 +76,13 @@ final class _ArticleDetailsBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          Text(
-            article.titleText,
-            style: textTheme.titleLarge,
+          Semantics(
+            container: true,
+            identifier: SemanticsIdentifiers.articleDetailsTitleText,
+            child: Text(
+              article.titleText,
+              style: textTheme.titleLarge,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -83,9 +92,13 @@ final class _ArticleDetailsBody extends StatelessWidget {
           const SizedBox(height: 24),
           Row(
             children: [
-              Text(
-                article.source.nameLabel,
-                style: textTheme.titleSmall,
+              Semantics(
+                container: true,
+                identifier: SemanticsIdentifiers.articleDetailsSourceText,
+                child: Text(
+                  article.source.nameLabel,
+                  style: textTheme.titleSmall,
+                ),
               ),
               const Spacer(),
               Text(
@@ -104,9 +117,13 @@ final class _ArticleDetailsBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          Text(
-            article.contentText,
-            style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400),
+          Semantics(
+            container: true,
+            identifier: SemanticsIdentifiers.articleDetailsContentText,
+            child: Text(
+              article.contentText,
+              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400),
+            ),
           ),
         ],
       ),

@@ -39,6 +39,7 @@ final class NewsListView extends StatelessWidget {
 
           return NewsListItem(
             article: article,
+            itemIndex: index,
             onPressed: () => _pushArticleDetails(context, article.id),
             showFavoriteButton: showFavoriteButton,
           );

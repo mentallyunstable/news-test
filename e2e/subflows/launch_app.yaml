@@ -1,0 +1,4 @@
+appId: ${APP_ID || 'com.example.news_test'}
+---
+- launchApp:
+    clearState: true

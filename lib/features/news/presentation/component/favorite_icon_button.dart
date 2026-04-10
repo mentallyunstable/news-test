@@ -11,11 +11,13 @@ final class FavoriteIconButton extends StatelessWidget {
     required this.article,
     this.padding,
     this.constraints,
+    this.semanticsIdentifier,
   });
 
   final NewsArticleItemEntity article;
   final EdgeInsetsGeometry? padding;
   final BoxConstraints? constraints;
+  final String? semanticsIdentifier;
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +26,25 @@ final class FavoriteIconButton extends StatelessWidget {
       builder: (context, state) {
         final isFavorite = state;
 
-        return IconButton(
-          padding: padding,
-          constraints: constraints,
-          onPressed: () {
-            final favoritesBloc = context.read<FavoritesBloc>();
+        return Semantics(
+          container: true,
+          button: true,
+          identifier: semanticsIdentifier,
+          child: IconButton(
+            padding: padding,
+            constraints: constraints,
+            onPressed: () {
+              final favoritesBloc = context.read<FavoritesBloc>();
 
-            favoritesBloc.add(
-              isFavorite ? FavoritesBlocEvent.remove(articleId: article.id) : FavoritesBlocEvent.add(article: article),
-            );
-          },
-          icon: SvgPicture.asset(
-            isFavorite ? AssetsKeys.favoriteFilledIcon : AssetsKeys.favoriteIcon,
+              favoritesBloc.add(
+                isFavorite
+                    ? FavoritesBlocEvent.remove(articleId: article.id)
+                    : FavoritesBlocEvent.add(article: article),
+              );
+            },
+            icon: SvgPicture.asset(
+              isFavorite ? AssetsKeys.favoriteFilledIcon : AssetsKeys.favoriteIcon,
+            ),
           ),
         );
       },

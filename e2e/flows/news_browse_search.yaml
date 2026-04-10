@@ -1,0 +1,53 @@
+appId: com.example.news_test
+name: "News Browse Search Smoke"
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "news_search_field"
+    timeout: 20000
+
+- extendedWaitUntil:
+    visible:
+      id: "news_list_item_0"
+    timeout: 20000
+
+- tapOn:
+    id: "news_category_health_chip"
+
+- extendedWaitUntil:
+    visible:
+      id: "news_list_item_0"
+    timeout: 20000
+
+- copyTextFrom:
+    id: "news_list_item_0_title"
+
+- tapOn:
+    id: "news_search_field"
+
+- pasteText
+
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible:
+      id: "news_list_item_0"
+    timeout: 15000
+
+- tapOn:
+    id: "news_list_item_0"
+
+- waitForAnimationToEnd
+
+- extendedWaitUntil:
+    visible:
+      id: "article_details_title_text"
+    timeout: 10000
+
+- assertVisible:
+    id: "article_details_source_text"
+
+- assertVisible:
+    id: "article_details_content_text"

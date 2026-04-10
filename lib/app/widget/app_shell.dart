@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:news_test/app/constant/assets_keys.dart';
+import 'package:news_test/shared/constant/semantics_identifiers.dart';
 import 'package:news_test/shared/style/app_theme.dart';
 
 /// Minimal shell wrapper for branched navigation.
@@ -19,10 +20,12 @@ final class AppShell extends StatelessWidget {
     _NavigationItemData(
       iconPath: AssetsKeys.newsNavigationIcon,
       activeIconPath: AssetsKeys.newsActiveNavigationIcon,
+      semanticsIdentifier: SemanticsIdentifiers.shellNewsTabButton,
     ),
     _NavigationItemData(
       iconPath: AssetsKeys.favoritesNavigationIcon,
       activeIconPath: AssetsKeys.favoritesActiveNavigationIcon,
+      semanticsIdentifier: SemanticsIdentifiers.shellFavoritesTabButton,
     ),
   ];
 
@@ -92,10 +95,12 @@ final class AppShell extends StatelessWidget {
 final class _NavigationItemData {
   final String iconPath;
   final String activeIconPath;
+  final String semanticsIdentifier;
 
   const _NavigationItemData({
     required this.iconPath,
     required this.activeIconPath,
+    required this.semanticsIdentifier,
   });
 }
 
@@ -114,11 +119,17 @@ final class _NavigationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconPath = isSelected ? data.activeIconPath : data.iconPath;
 
-    return InkResponse(
-      onTap: onTap,
-      enableFeedback: true,
-      child: Center(
-        child: SvgPicture.asset(iconPath),
+    return Semantics(
+      container: true,
+      button: true,
+      selected: isSelected,
+      identifier: data.semanticsIdentifier,
+      child: InkResponse(
+        onTap: onTap,
+        enableFeedback: true,
+        child: Center(
+          child: SvgPicture.asset(iconPath),
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news_test/features/news/domain/entity/news_category_entity.dart';
 import 'package:news_test/features/news/presentation/component/news_category_list_item.dart';
+import 'package:news_test/shared/constant/semantics_identifiers.dart';
 
 typedef CategorySelectedCallback = void Function(String category);
 
@@ -43,6 +44,9 @@ final class NewsCategoriesListView extends StatelessWidget implements PreferredS
             category: category,
             isSelected: category.value == selectedCategory,
             onTap: () => onSelectCategory(category.value),
+            semanticsIdentifier: SemanticsIdentifiers.newsCategoryChip(
+              category.value,
+            ),
           );
         },
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_test/features/favorites/bloc/favorites_bloc.dart';
 import 'package:news_test/features/news/presentation/component/news_list_view.dart';
+import 'package:news_test/shared/constant/semantics_identifiers.dart';
 
 final class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -42,10 +43,14 @@ final class FavoritesScreen extends StatelessWidget {
               }
 
               if (favorites.isEmpty) {
-                return const SliverFillRemaining(
+                return SliverFillRemaining(
                   hasScrollBody: false,
                   child: Center(
-                    child: Text('No favorite articles yet'),
+                    child: Semantics(
+                      container: true,
+                      identifier: SemanticsIdentifiers.favoritesEmptyStateText,
+                      child: const Text('No favorite articles yet'),
+                    ),
                   ),
                 );
               }
