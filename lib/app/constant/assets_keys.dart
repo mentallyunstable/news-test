@@ -8,6 +8,7 @@ final class AssetsKeys {
   static const String favoritesActiveNavigationIcon = 'assets/icons/svg/favorites-active-bottom-navigation.svg';
 
   static const String searchIcon = 'assets/icons/svg/search-icon.svg';
+  static const String leadingBackArrowIcon = 'assets/icons/svg/leading-back-arrow.svg';
   static const String favoriteIcon = 'assets/icons/svg/favorite-icon.svg';
   static const String favoriteFilledIcon = 'assets/icons/svg/favorite-filled-icon.svg';
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:news_test/shared/style/app_colors.dart';
 import 'package:news_test/shared/style/app_typography.dart';
+import 'package:news_test/shared/ui/app_back_button_icon.dart';
 
 final class AppTheme {
   const AppTheme._();
@@ -26,6 +27,9 @@ final class AppTheme {
       surfaceContainer: AppColors.surfaceContainer,
     ),
     scaffoldBackgroundColor: AppColors.scaffoldBackground,
+    actionIconTheme: const ActionIconThemeData(
+      backButtonIconBuilder: _buildBackButtonIcon,
+    ),
     appBarTheme: const AppBarTheme(
       centerTitle: false,
       actionsPadding: .symmetric(horizontal: 8),
@@ -50,6 +54,9 @@ final class AppTheme {
       primary: AppColors.primary,
       brightness: Brightness.dark,
     ),
+    actionIconTheme: const ActionIconThemeData(
+      backButtonIconBuilder: _buildBackButtonIcon,
+    ),
     appBarTheme: const AppBarTheme(
       centerTitle: false,
       surfaceTintColor: Colors.transparent,
@@ -60,6 +67,8 @@ final class AppTheme {
     AppThemeExtensions(navBarHeight: 84),
   ];
 }
+
+Widget _buildBackButtonIcon(BuildContext context) => const AppBackButtonIcon();
 
 final class AppThemeExtensions extends ThemeExtension<AppThemeExtensions> {
   final double navBarHeight;
